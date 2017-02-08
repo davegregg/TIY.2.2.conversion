@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 require 'minitest/autorun'
-require 'tty'
 require_relative 'converter'
 
 class ConverterTest < MiniTest::Test

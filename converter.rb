@@ -1,5 +1,7 @@
 # A class to convert units of measurement
 # To use: Converter.new(32).f_to_c == 0
+require 'pry'
+require 'tty'
 
 class Converter
   attr_accessor :number
@@ -88,11 +90,11 @@ class Converter
       number * 365.25
     end
 
-    def julian_week_to_skyrim_week
+    def julian_week_to_nirn_week
       number * 7 / 10
     end
 
-    def skyrim_week_to_julian_week
+    def nirn_week_to_julian_week
       number * 10 / 7
     end
 
@@ -107,6 +109,56 @@ class Converter
 
 end
 
-# prompt = TTY::Prompt.new
-# options = {}
-# prompt.select("Hey boo. What unit would you like to convert?", options)
+#print Converter.new(33).f_to_c
+
+prompt = TTY::Prompt.new
+options = { 'Celsius' => 'c',
+            'Fahrenheit' => 'f',
+            'quarts' => 'quarts',
+            'cups' => 'cups',
+            'inches' => 'inches',
+            'feet' => 'feet',
+            'seconds' => 'seconds',
+            'milliseconds' => 'milliseconds',
+            'miles' => 'miles',
+            'meters' => 'meters',
+            'ounces' => 'ounce',
+            'grams' => 'gram',
+            'days' => 'days',
+            'years' => 'year',
+            'weeks' => 'julian_week',
+            'tendays' => 'nirn_week' }
+unit_conversions = {  'c' => ['f'],
+                      'f' => ['c'],
+                      'quarts' => ['cups'],
+                      'cups' => ['quarts'],
+                      'inches' => ['feet'],
+                      'feet' => ['inches','miles','meters'],
+                      'seconds' => ['milliseconds'],
+                      'milliseconds' => ['seconds'],
+                      'miles' => ['feet'],
+                      'meters' => ['feet'],
+                      'ounce' => ['gram'],
+                      'gram' => ['ounce'],
+                      'days' => ['year'],
+                      'year' => ['days'],
+                      'julian_week' => ['nirn_week'],
+                      'nirn_week' => ['julian_week'] }
+
+origin_unit = prompt.select("Hey boo. What unit would you like to convert?", options)
+
+puts "Construct method name: #{origin_unit}_to_#{unit_conversions[origin_unit][0]}"
+
+if unit_conversions[origin_unit].count == 1
+  target_unit = unit_conversions[origin_unit].first
+  number_to_convert = prompt.ask("I can convert #{options.key(origin_unit)} into #{options.key(target_unit)}. Give me a value to convert:\n")
+else
+  target_unit = prompt.select("And what unit would you like to convert #{options.key(origin_unit)} into?", unit_conversions[origin_unit])
+  number_to_convert = prompt.ask("Okay! Give me a value in #{options.key(origin_unit)} to convert into #{options.key(target_unit)}:\n")
+end
+
+result = Converter.new(number_to_convert).send("#{origin_unit}_to_#{target_unit}".to_sym)
+
+puts "Okay! #{number_to_convert} #{options.key(origin_unit)} is equal to #{result} #{options.key(target_unit)}!"
+
+#binding.pry
